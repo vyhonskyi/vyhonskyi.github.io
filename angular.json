@@ -64,7 +64,6 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "vyhonskyi.github.io",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,

@@ -34,4 +34,9 @@ export class AppComponent {
   public toggleNavbar(): void {
     this.navbarExpanded = !this.navbarExpanded;
   }
+
+  public closeNavbar(): void {
+    this.navbarExpanded = false;
+  }
+
 }

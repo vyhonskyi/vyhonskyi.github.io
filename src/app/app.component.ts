@@ -11,7 +11,7 @@ import { trigger, state, transition, animate, style, query } from '@angular/anim
         display: 'none'
       })),
       state('expanded', style({
-        display: 'block',
+        display: 'block'
       })),
       transition('collapsed => expanded', [
         style({

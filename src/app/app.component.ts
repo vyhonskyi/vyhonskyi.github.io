@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { trigger, state, transition, animate, style } from '@angular/animations';
+import { trigger, state, transition, animate, style, query } from '@angular/animations';
 
 @Component({
   selector: 'app-root',
@@ -11,8 +11,20 @@ import { trigger, state, transition, animate, style } from '@angular/animations'
         display: 'none'
       })),
       state('expanded', style({
-        display: 'block'
-      }))
+        display: 'block',
+      })),
+      transition('collapsed => expanded', [
+        style({
+          display: 'block',
+          height: 0
+        }),
+        query('ul', style({ display: 'none' })),
+        animate('0.1s', style({ height: '*' }))
+      ]),
+      transition('expanded => collapsed', [
+        query('ul', style({ display: 'none' })),
+        animate('0.1s', style({ height: 0 }))
+      ])
     ])
   ]
 })

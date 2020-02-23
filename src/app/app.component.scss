@@ -1,3 +1,9 @@
+.collapse {
+  &:not(.show) {
+    display: block;
+  }
+}
+
 .dev-icons {
   .list-inline-item {
     img {

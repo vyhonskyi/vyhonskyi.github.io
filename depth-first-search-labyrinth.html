@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Depth-firsh search labyrinth</title>
+</head>
+
+<body>
+
+  <canvas id="canvas"></canvas>
+  <script>
+    var SCALE = 10;
+    var STACKS_COUNT = 5;
+    var DISTINCT_COLORS = [
+            /*"#000000", */ "#00FF00", "#0000FF", "#FF0000", "#01FFFE", "#FFA6FE", "#FFDB66", "#006401",
+      "#010067", "#95003A", "#007DB5", "#FF00F6", "#FFEEE8", "#774D00", "#90FB92", "#0076FF",
+      "#D5FF00", "#FF937E", "#6A826C", "#FF029D", "#FE8900", "#7A4782", "#7E2DD2", "#85A900",
+      "#FF0056", "#A42400", "#00AE7E", "#683D3B", "#BDC6FF", "#263400", "#BDD393", "#00B917",
+      "#9E008E", "#001544", "#C28C9F", "#FF74A3", "#01D0FF", "#004754", "#E56FFE", "#788231",
+      "#0E4CA1", "#91D0CB", "#BE9970", "#968AE8", "#BB8800", "#43002C", "#DEFF74", "#00FFC6",
+      "#FFE502", "#620E00", "#008F9C", "#98FF52", "#7544B1", "#B500FF", "#00FF78", "#FF6E41",
+      "#005F39", "#6B6882", "#5FAD4E", "#A75740", "#A5FFD2", "#FFB167", "#009BFF", "#E85EBE"
+    ];
+
+    var DepthFirstSearch = function () {
+
+      var cells;
+      var ways = [
+        { x: 0, y: -1 },     // up,
+        { x: 1, y: 0 },      // right,
+        { x: 0, y: 1 },      // down
+        { x: -1, y: 0 }      // left
+      ];
+
+      var gWidth;
+      var gHeight;
+      var gCanvasWidth;
+      var gCanvasHeight;
+      var ctx;
+      var stacks;
+      var colorPointer = 0;
+      var isForwardWay = true;
+
+      this.draw = function (width, height, canvasId) {
+        gWidth = width;
+        gHeight = height;
+
+        cells = new Array(gWidth);
+        for (var i = 0; i < gWidth; i++) {
+          cells[i] = new Array(gHeight);
+        }
+
+        var canvas = document.getElementById(canvasId);
+        ctx = canvas.getContext('2d');
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.setLineDash([])
+
+        stacks = new Array(STACKS_COUNT);
+
+        stacks[0] = [{ x: 0, y: 0 }];
+        stacks[1] = [{ x: 0, y: height - 1 }];
+        stacks[2] = [{ x: width - 1, y: 0 }];
+        stacks[3] = [{ x: width - 1, y: height - 1 }];
+        stacks[4] = [{ x: Math.round(width / 2), y: Math.round(height / 2) }];
+
+        window.requestAnimationFrame(buildStep);
+      }
+
+      function buildStep() {
+        stacks.forEach(function (stack, idx_of_stack) {
+          if (stack.length > 0) {
+            var curCell = stack[stack.length - 1];
+            cells[curCell.x][curCell.y] = 1;
+
+            var nextCell = getNextCell(curCell.x, curCell.y);
+
+            if (nextCell) {
+              renderLine(curCell, nextCell, "#000000");
+              stack.push(nextCell);
+            } else {
+              var topCell = stack.pop();
+              renderLine(topCell, stack[stack.length - 1] || topCell, DISTINCT_COLORS[idx_of_stack]);
+            }
+          }
+        });
+
+        if (stacks.some(function (stack) { return stack.length > 0; })) {
+          window.requestAnimationFrame(buildStep);
+        }
+      }
+
+      function getNextCell(x, y) {
+        var shuffledWays = shuffle(ways);
+
+        for (var i = 0; i < shuffledWays.length; i++) {
+          var xNext = x + shuffledWays[i].x;
+          var yNext = y + shuffledWays[i].y;
+          if ((xNext >= 0 && xNext < gWidth) && (yNext >= 0 && yNext < gHeight) && !cells[xNext][yNext]) {
+            return { x: xNext, y: yNext };
+          }
+        }
+        return null;
+      }
+
+      function renderLine(cur, next, color) {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.moveTo((cur.x * SCALE) + Math.round(SCALE / 2), (cur.y * SCALE) + Math.round(SCALE / 2));
+        ctx.lineTo((next.x * SCALE) + Math.round(SCALE / 2), (next.y * SCALE) + Math.round(SCALE / 2));
+        ctx.stroke();
+      }
+
+      function shuffle(o) {
+        for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+        return o;
+      };
+    };
+
+    (function () {
+      document.body.style.overflow = "hidden"
+
+      var canvas = document.getElementById('canvas');
+      canvas.width = document.documentElement.clientWidth - SCALE;
+      canvas.height = document.documentElement.clientHeight - SCALE;
+
+      var depthFirstSearch = new DepthFirstSearch();
+      depthFirstSearch.draw(Math.round(canvas.width / SCALE), Math.round(canvas.height / SCALE), 'canvas');
+    })();
+  </script>
+</body>
+
+</html>

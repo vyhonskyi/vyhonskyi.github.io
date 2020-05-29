@@ -1,5 +1,5 @@
 .collapse {
-  &:not(.show) {  
+  &:not(.show) {
     display: block;
   }
 }
@@ -22,5 +22,15 @@
         vertical-align: middle;
       }
     }
+  }
+}
+
+.resume-item {
+  .screenshot {
+    padding-left: 1em;
+  }
+
+  .github-link {
+    float: right;
   }
 }
